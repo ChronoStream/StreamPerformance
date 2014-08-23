@@ -1,8 +1,10 @@
-package dbconnector;
+package stream.performance.dbconnector;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
+import stream.performance.toolkits.RandomString;
 
 public class AccessPerformance {
 

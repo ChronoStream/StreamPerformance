@@ -1,4 +1,4 @@
-package dbconnector;
+package stream.performance.dbconnector;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,6 +8,8 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
+import stream.performance.toolkits.RandomString;
 
 public class JoinPerformance {
 

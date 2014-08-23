@@ -1,4 +1,4 @@
-package dbconnector;
+package stream.performance.dbconnector;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,11 +10,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import stream.performance.toolkits.MemoryReport;
+import stream.performance.toolkits.RandomString;
+
 public class DatabasePerformance {
 
 	static Random rand=new Random();
 	static final int stringLength=50;
-	static final int round=1000000;
+	static final int round=10000;
 	static final int maxInt=10000;
 	static final int granularity=20;
 	
@@ -51,9 +54,13 @@ public class DatabasePerformance {
 		insertStatement.close();
 		//******************************
 		PreparedStatement sumStatement=connect.prepareStatement("select avg(myvalue) as myavg from mykeyvalue");
-		testDatabaseQuery(sumStatement);
+		testDatabaseQuery1(sumStatement);
 		sumStatement.close();
-		testDatabaseQuery2(statement);
+		//******************************
+		PreparedStatement retrieveStatement=connect.prepareStatement("select myvalue from mykeyvalue");
+		testDatabaseQuery2(retrieveStatement);
+		retrieveStatement.close();
+		//******************************
 		statement.close();
 		connect.close();
 	}
@@ -99,11 +106,10 @@ public class DatabasePerformance {
 		System.out.println("per tuple latency="+(elapsedMS*1000.0/round)+"ns");
 	}	
 	
-	public static void testDatabaseQuery(PreparedStatement statement) throws SQLException{		
+	public static void testDatabaseQuery1(PreparedStatement statement) throws SQLException{		
 		long startTime, endTime;
 		double elapsedMS;
 		ResultSet result = null;
-		//scan
 		startTime=System.currentTimeMillis();
 		result = statement.executeQuery();
 		int average = 0;
@@ -117,21 +123,22 @@ public class DatabasePerformance {
 		result.close();
 	}
 	
-	public static void testDatabaseQuery2(Statement statement) throws SQLException{
+	public static void testDatabaseQuery2(PreparedStatement statement) throws SQLException{
 		long startTime, endTime;
 		double elapsedMS;
 		ResultSet result = null;
-		//scan
 		startTime=System.currentTimeMillis();
-		result = statement.executeQuery("select avg(myvalue) as myavg from mykeyvalue");
-		int average = 0;
-		while(result.next()){
-			average=result.getInt("myavg");
-			System.out.println("the average value is "+average);
+		result = statement.executeQuery();
+		long sum = 0;
+		int count = 0;
+		while (result.next()) {
+			sum += result.getInt("myvalue");
+			++count;
 		}
+		System.out.println("the average value is " + sum * 1.0 / count);
 		endTime=System.currentTimeMillis();
 		elapsedMS=endTime-startTime;
-		System.out.println("database average computation elapsedTime="+elapsedMS+"ms");
+		System.out.println("database retrieve average computation elapsedTime="+elapsedMS+"ms");
 		result.close();
 	}
 	
@@ -139,7 +146,6 @@ public class DatabasePerformance {
 		Map<String, Integer> heapMap = new HashMap<String, Integer>();
 		long startTime, endTime;
 		double elapsedMS;
-		
 		//insert
 		startTime=System.currentTimeMillis();
 		for(int i=0; i<round; ++i){
@@ -151,10 +157,8 @@ public class DatabasePerformance {
 		System.out.println("library insert elapsedTime="+elapsedMS+"ms");
 		System.out.println("per tuple latency="+(elapsedMS*1000/round)+"ns");
 		
-		final long usedMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 		System.out.println("real memory="+(stringLength+4)*round/1024/1024+"MB");
-		System.out.println("used memory="+usedMem/1024/1024 +"MB");
-		System.out.println("Max memory="+Runtime.getRuntime().maxMemory()/1024/1024+"MB");
+		MemoryReport.reportStatus();
 		
 		//scan
 		startTime=System.currentTimeMillis();
@@ -168,13 +172,11 @@ public class DatabasePerformance {
 		System.out.println("average="+average+", heap average computation elapsedTime="+elapsedMS+"ms");
 	}
 	
-	
-	
 	public static void main(String[] args) throws Exception{
 		System.out.println("==========library======");
 		testLib();
-//		System.out.println("==========database========");
-//		testDB();
+		System.out.println("==========database========");
+		testDB();
 		System.out.println("==========sqlite=========");
 		testSqlite();
 	}
