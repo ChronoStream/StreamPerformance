@@ -13,7 +13,7 @@ import stream.performance.nexmark.InputTuple.BidTuple;
 import stream.performance.nexmark.InputTuple.PersonTuple;
 import stream.performance.toolkits.MemoryReport;
 
-public class NEXMarkDatabaseMain {
+public class NEXMarkStorageMain {
 
 	private static Connection connect = null;
 	private static Statement statement = null;
@@ -107,6 +107,7 @@ public class NEXMarkDatabaseMain {
 	
 	public static void query() throws Exception{
 		Map<String, Integer> avgPrices= new HashMap<String, Integer>();
+		statement.executeQuery("select * from table");
 	}
 	
 	public static void main(String[] args) throws Exception{

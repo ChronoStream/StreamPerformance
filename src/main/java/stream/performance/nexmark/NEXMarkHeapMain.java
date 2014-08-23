@@ -66,17 +66,38 @@ public class NEXMarkHeapMain {
 		}
 	}
 
+	public static void query(){
+		Map<String, Integer> avgPrices= new HashMap<String, Integer>();
+		for(String item : itemPrices.keySet()){
+			long sum =0;
+			for(Integer price : itemPrices.get(item)){
+				sum+=price;
+			}
+			avgPrices.put(item, (int) (sum/itemPrices.size()));
+		}
+	}
+	
 	public static void main(String[] args) {
-		long start_time, end_time;
+		long start_time, end_time, elapsed_time;
+		//======================================
 		start_time=System.currentTimeMillis();
-		populate(2000000);
+		populate(200000);
 		end_time=System.currentTimeMillis();
-		long elapsed_time=end_time-start_time;
-		System.out.println("elapsed time="+elapsed_time+"ms");
+		elapsed_time=end_time-start_time;
+		System.out.println("populate elapsed time="+elapsed_time+"ms");
+		MemoryReport.reportStatus();
+		//======================================
+		start_time=System.currentTimeMillis();		
+		query();
+		end_time=System.currentTimeMillis();
+		elapsed_time=end_time-start_time;
+		System.out.println("query elapsed time="+elapsed_time+"ms");
+		MemoryReport.reportStatus();
+		//======================================
 		System.out.println("person state size="+personMap.size());
 		System.out.println("auction state size="+auctionMap.size());
 		System.out.println("item_price state size="+itemPrices.size());
-		MemoryReport.reportStatus();
+		
 	}
 
 }
