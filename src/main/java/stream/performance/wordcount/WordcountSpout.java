@@ -27,7 +27,7 @@ public class WordcountSpout extends BaseRichSpout {
 	}
 
 	public void nextTuple() {
-		Utils.sleep(rand.nextInt(10));
+		Utils.sleep(rand.nextInt(50));
 		String line = null;
 		try {
 			line = _reader.readLine();

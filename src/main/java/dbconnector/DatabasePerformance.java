@@ -13,10 +13,10 @@ import java.util.Random;
 public class DatabasePerformance {
 
 	static Random rand=new Random();
-	static final int stringLength=20;
-	static final int round=10000;
-	static final int maxInt=100000;
-	static final int granularity=2000;
+	static final int stringLength=50;
+	static final int round=1000000;
+	static final int maxInt=10000;
+	static final int granularity=20;
 	
 	public static void testDB() throws SQLException{
 		Connection connect = null;
@@ -46,10 +46,14 @@ public class DatabasePerformance {
 		statement.executeUpdate("create table mykeyvalue(mykey varchar("+String.valueOf(stringLength)+"), myvalue int)");
 		//testDatabaseInsert(statement);
 		//******************************
-		PreparedStatement pStatement=connect.prepareStatement("insert into mykeyvalue values(?, ?)");
-		testBatchInsert(pStatement);
-		pStatement.close();
+		PreparedStatement insertStatement=connect.prepareStatement("insert into mykeyvalue values(?, ?)");
+		testBatchInsert(insertStatement);
+		insertStatement.close();
 		//******************************
+		PreparedStatement sumStatement=connect.prepareStatement("select avg(myvalue) as myavg from mykeyvalue");
+		testDatabaseQuery(sumStatement);
+		sumStatement.close();
+		testDatabaseQuery2(statement);
 		statement.close();
 		connect.close();
 	}
@@ -57,7 +61,7 @@ public class DatabasePerformance {
 	public static void testDatabaseInsert(Statement statement) throws SQLException{
 		String sql;
 		long startTime, endTime;
-		double elapsedSeconds;
+		double elapsedMS;
 		//insert
 		startTime=System.currentTimeMillis();
 		for (int i = 0; i < round; ++i) {
@@ -67,14 +71,14 @@ public class DatabasePerformance {
 			statement.executeUpdate(sql);
 		}
 		endTime=System.currentTimeMillis();
-		elapsedSeconds=(endTime-startTime)/1000.0;
-		System.out.println("database insert elapsedTime="+elapsedSeconds+"s");
-		System.out.println("per tuple latency="+((endTime-startTime)*1000.0/round)+"ns");
+		elapsedMS = endTime - startTime;
+		System.out.println("database insert elapsedTime="+elapsedMS+"ms");
+		System.out.println("per tuple latency="+(elapsedMS*1000.0/round)+"ns");
 	}
 	
 	public static void testBatchInsert(PreparedStatement statement) throws SQLException{
 		long startTime, endTime;
-		double elapsedSeconds;
+		double elapsedMS;
 		//insert
 		startTime=System.currentTimeMillis();
 		for (int i = 0; i < round; ++i) {
@@ -82,63 +86,59 @@ public class DatabasePerformance {
 			Integer value = rand.nextInt(maxInt);
 			statement.setString(1, key);
 			statement.setInt(2, value);
+			statement.addBatch();
 			if (i % granularity == 0) {
-				statement.addBatch();
 				statement.executeBatch();
 			}
 		}
+		statement.executeBatch();
 		
 		endTime=System.currentTimeMillis();
-		elapsedSeconds=(endTime-startTime)/1000.0;
-		System.out.println("database insert elapsedTime="+elapsedSeconds+"s");
-		System.out.println("per tuple latency="+((endTime-startTime)*1000.0/round)+"ns");
+		elapsedMS = endTime - startTime;
+		System.out.println("database insert elapsedTime="+elapsedMS+"ms");
+		System.out.println("per tuple latency="+(elapsedMS*1000.0/round)+"ns");
 	}	
 	
-	public static void testDatabaseQuery(Statement statement) throws SQLException{		
-		String sql;
+	public static void testDatabaseQuery(PreparedStatement statement) throws SQLException{		
 		long startTime, endTime;
-		double elapsedSeconds;
+		double elapsedMS;
 		ResultSet result = null;
 		//scan
 		startTime=System.currentTimeMillis();
-		sql = "select avg(myvalue) as mysum from mykeyvalue";
-		result = statement.executeQuery(sql);
-		int mysum = 0;
+		result = statement.executeQuery();
+		int average = 0;
 		while(result.next()){
-			mysum=result.getInt("mysum");
-			System.out.println("value="+mysum);
+			average=result.getInt("myavg");
+			System.out.println("the average value is "+average);
 		}
-
 		endTime=System.currentTimeMillis();
-		elapsedSeconds=(endTime-startTime)/1000.0;
-		
-		System.out.println("database scan elapsedTime="+elapsedSeconds+"s");
-		//////////////////////////////////
-		
-		//retrieve scan
-		startTime=System.currentTimeMillis();
-		sql = "select myvalue from mykeyvalue";
-		result = statement.executeQuery(sql);
-		long mysum1 = 0;
-		int count=0;
-		while(result.next()){
-			mysum1+=result.getInt("myvalue");
-			count+=1;
-		}
-		System.out.println("count="+count+", value="+mysum1/count);
-
-		endTime=System.currentTimeMillis();
-		elapsedSeconds=(endTime-startTime)/1000.0;
-		
-		System.out.println("database retrieve scan elapsedTime="+elapsedSeconds+"s");
+		elapsedMS=endTime-startTime;
+		System.out.println("database average computation elapsedTime="+elapsedMS+"ms");
 		result.close();
-		
+	}
+	
+	public static void testDatabaseQuery2(Statement statement) throws SQLException{
+		long startTime, endTime;
+		double elapsedMS;
+		ResultSet result = null;
+		//scan
+		startTime=System.currentTimeMillis();
+		result = statement.executeQuery("select avg(myvalue) as myavg from mykeyvalue");
+		int average = 0;
+		while(result.next()){
+			average=result.getInt("myavg");
+			System.out.println("the average value is "+average);
+		}
+		endTime=System.currentTimeMillis();
+		elapsedMS=endTime-startTime;
+		System.out.println("database average computation elapsedTime="+elapsedMS+"ms");
+		result.close();
 	}
 	
 	public static void testLib(){
 		Map<String, Integer> heapMap = new HashMap<String, Integer>();
 		long startTime, endTime;
-		double elapsedSeconds;
+		double elapsedMS;
 		
 		//insert
 		startTime=System.currentTimeMillis();
@@ -146,10 +146,10 @@ public class DatabasePerformance {
 			heapMap.put(RandomString.generateRandomString(stringLength), rand.nextInt(maxInt));
 		}
 		endTime=System.currentTimeMillis();
-		elapsedSeconds=(endTime-startTime)/1000.0;
+		elapsedMS=endTime-startTime;
 
-		System.out.println("library insert elapsedTime="+elapsedSeconds+"s");
-		System.out.println("per tuple latency="+((endTime-startTime)*1000.0/round)+"ns");
+		System.out.println("library insert elapsedTime="+elapsedMS+"ms");
+		System.out.println("per tuple latency="+(elapsedMS*1000/round)+"ns");
 		
 		final long usedMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 		System.out.println("real memory="+(stringLength+4)*round/1024/1024+"MB");
@@ -157,15 +157,15 @@ public class DatabasePerformance {
 		System.out.println("Max memory="+Runtime.getRuntime().maxMemory()/1024/1024+"MB");
 		
 		//scan
-//		startTime=System.currentTimeMillis();
-//		int sum=0;
-//		for(Integer key : heapMap.values()){
-//			sum+=key;
-//		}		
-//		endTime=System.currentTimeMillis();
-//		elapsedSeconds=(endTime-startTime)/1000.0;
-//		
-//		System.out.println("sum="+sum+", library scan elapsedTime="+elapsedSeconds+"s");
+		startTime=System.currentTimeMillis();
+		long sum = 0L;
+		for(Integer key : heapMap.values()){
+			sum+=key;
+		}
+		int average=(int) (sum/heapMap.size());
+		endTime=System.currentTimeMillis();
+		elapsedMS=endTime-startTime;
+		System.out.println("average="+average+", heap average computation elapsedTime="+elapsedMS+"ms");
 	}
 	
 	
@@ -173,8 +173,8 @@ public class DatabasePerformance {
 	public static void main(String[] args) throws Exception{
 		System.out.println("==========library======");
 		testLib();
-		System.out.println("==========database========");
-		testDB();
+//		System.out.println("==========database========");
+//		testDB();
 		System.out.println("==========sqlite=========");
 		testSqlite();
 	}

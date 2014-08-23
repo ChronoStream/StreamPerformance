@@ -7,7 +7,7 @@ import java.util.Random;
 public class AccessPerformance {
 
 	static Random rand=new Random();
-	static final int round=100000;
+	static final int round=1000000;
 	static final int maxInt=100000;
 	static final int stringLength=20;
 
@@ -24,6 +24,7 @@ public class AccessPerformance {
 		for(String key : kvPairs.keySet()){
 			count+=kvPairs.get(key);
 		}
+		System.out.println("count="+count);
 	}
 	
 	public static void main(String[] args) {
@@ -33,14 +34,14 @@ public class AccessPerformance {
 		endTime=System.currentTimeMillis();
 		elapsedTime=endTime-startTime;
 		System.out.println("elapsed time="+elapsedTime+"ms");
-		System.out.println("per tuple latency="+elapsedTime*1000/round+"ns");
+		System.out.println("per tuple latency="+elapsedTime*1000.0/round+"ns");
 		System.out.println("=============================");
 		startTime=System.currentTimeMillis();
 		populate();
 		endTime=System.currentTimeMillis();
 		elapsedTime=endTime-startTime;
 		System.out.println("elapsed time="+elapsedTime+"ms");
-		System.out.println("per tuple latency="+elapsedTime*1000/round+"ns");		
+		System.out.println("per tuple latency="+elapsedTime*1000.0/round+"ns");		
 	}
 
 }

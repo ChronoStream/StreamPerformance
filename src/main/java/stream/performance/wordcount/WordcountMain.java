@@ -34,7 +34,7 @@ public class WordcountMain {
 			TopologyBuilder builder = new TopologyBuilder();
 			builder.setSpout("spout", new WordcountSpout(inputFilename));
 			builder.setBolt("parser", new WordcountParser()).shuffleGrouping("spout");
-			builder.setBolt("window", new WordcountWindow(windowSize, slidingStep)).fieldsGrouping("parser", new Fields("word"));
+			builder.setBolt("window", new WordcountWindowLeveldb(windowSize, slidingStep)).fieldsGrouping("parser", new Fields("word"));
 			builder.setBolt("sink", new WordcountSink(outFilename)).globalGrouping("window");
 
 			Config conf = new Config();
