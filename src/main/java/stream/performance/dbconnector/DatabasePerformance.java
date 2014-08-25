@@ -16,8 +16,8 @@ import stream.performance.toolkits.RandomString;
 public class DatabasePerformance {
 
 	static Random rand=new Random();
-	static final int stringLength=50;
-	static final int round=10000;
+	static final int stringLength=20;
+	static final int round=100000;
 	static final int maxInt=10000;
 	static final int granularity=20;
 	
@@ -31,11 +31,18 @@ public class DatabasePerformance {
 		statement = connect.createStatement();
 		statement.executeUpdate("drop table mykeyvalue");
 		statement.executeUpdate("create table mykeyvalue(mykey varchar("+String.valueOf(stringLength)+"), myvalue int) engine=memory");
-		//testDatabaseInsert(statement);
 		//******************************
 		PreparedStatement pStatement=connect.prepareStatement("insert into mykeyvalue values(?, ?)");
 		testBatchInsert(pStatement);
 		pStatement.close();
+		//******************************
+		PreparedStatement sumStatement=connect.prepareStatement("select avg(myvalue) as myavg from mykeyvalue");
+		testDatabaseQuery1(sumStatement);
+		sumStatement.close();
+		//******************************
+		PreparedStatement retrieveStatement=connect.prepareStatement("select myvalue from mykeyvalue");
+		testDatabaseQuery2(retrieveStatement);
+		retrieveStatement.close();
 		//******************************
 		statement.close();
 		connect.close();
@@ -47,7 +54,6 @@ public class DatabasePerformance {
 		connect = DriverManager.getConnection("jdbc:sqlite::memory:");
 		statement = connect.createStatement();
 		statement.executeUpdate("create table mykeyvalue(mykey varchar("+String.valueOf(stringLength)+"), myvalue int)");
-		//testDatabaseInsert(statement);
 		//******************************
 		PreparedStatement insertStatement=connect.prepareStatement("insert into mykeyvalue values(?, ?)");
 		testBatchInsert(insertStatement);
