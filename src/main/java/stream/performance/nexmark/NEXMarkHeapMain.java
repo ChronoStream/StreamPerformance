@@ -66,38 +66,66 @@ public class NEXMarkHeapMain {
 		}
 	}
 
-	public static void query(){
-		Map<String, Integer> avgPrices= new HashMap<String, Integer>();
-		for(String item : itemPrices.keySet()){
-			long sum =0;
-			for(Integer price : itemPrices.get(item)){
-				sum+=price;
+	public static void query() {
+		Map<String, Integer> avgPrices = new HashMap<String, Integer>();
+		for (String item : itemPrices.keySet()) {
+			long sum = 0;
+			for (Integer price : itemPrices.get(item)) {
+				sum += price;
 			}
-			avgPrices.put(item, (int) (sum/itemPrices.size()));
+			avgPrices.put(item, (int) (sum / itemPrices.size()));
+		}
+		Map<String, Integer> rankedPrices = new HashMap<String, Integer>();
+		int count = 0;
+		for (String key : avgPrices.keySet()) {
+			rankedPrices.put(key, avgPrices.get(key));
+			count += 1;
+			if (count == 10) {
+				break;
+			}
+		}
+		Map<String, Integer> sellerPrice = new HashMap<String, Integer>();
+		for (String item_id : rankedPrices.keySet()) {
+			for (String auction_id : auctionMap.keySet()) {
+				if (item_id == auction_id) {
+					sellerPrice.put(auctionMap.get(auction_id).seller,
+							rankedPrices.get(item_id));
+				}
+			}
+		}
+
+		for (String seller_id : sellerPrice.keySet()) {
+			for (String person_id : personMap.keySet()) {
+				if (seller_id == person_id) {
+					System.out.println("seller=" + seller_id + ", average="
+							+ sellerPrice.get(seller_id) + ", province="
+							+ personMap.get(seller_id).province);
+				}
+			}
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		long start_time, end_time, elapsed_time;
-		//======================================
-		start_time=System.currentTimeMillis();
-		populate(200000);
-		end_time=System.currentTimeMillis();
-		elapsed_time=end_time-start_time;
-		System.out.println("populate elapsed time="+elapsed_time+"ms");
+		// ======================================
+		start_time = System.currentTimeMillis();
+		populate(5000);
+		end_time = System.currentTimeMillis();
+		elapsed_time = end_time - start_time;
+		System.out.println("populate elapsed time=" + elapsed_time + "ms");
 		MemoryReport.reportStatus();
-		//======================================
-		start_time=System.currentTimeMillis();		
+		// ======================================
+		start_time = System.currentTimeMillis();
 		query();
-		end_time=System.currentTimeMillis();
-		elapsed_time=end_time-start_time;
-		System.out.println("query elapsed time="+elapsed_time+"ms");
+		end_time = System.currentTimeMillis();
+		elapsed_time = end_time - start_time;
+		System.out.println("query elapsed time=" + elapsed_time + "ms");
 		MemoryReport.reportStatus();
-		//======================================
-		System.out.println("person state size="+personMap.size());
-		System.out.println("auction state size="+auctionMap.size());
-		System.out.println("item_price state size="+itemPrices.size());
-		
+		// ======================================
+		System.out.println("person state size=" + personMap.size());
+		System.out.println("auction state size=" + auctionMap.size());
+		System.out.println("item_price state size=" + itemPrices.size());
+
 	}
 
 }

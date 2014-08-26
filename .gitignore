@@ -16,3 +16,4 @@ tmp
 *.jar
 .DS_Store
 tweets.txt
+*.dat

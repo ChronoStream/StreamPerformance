@@ -36,14 +36,14 @@ public class AccessPerformance {
 		endTime=System.currentTimeMillis();
 		elapsedTime=endTime-startTime;
 		System.out.println("elapsed time="+elapsedTime+"ms");
-		System.out.println("per tuple latency="+elapsedTime*1000.0/round+"ns");
+		System.out.println("per tuple latency="+elapsedTime*1000.0/round+"us");
 		System.out.println("=============================");
 		startTime=System.currentTimeMillis();
 		populate();
 		endTime=System.currentTimeMillis();
 		elapsedTime=endTime-startTime;
 		System.out.println("elapsed time="+elapsedTime+"ms");
-		System.out.println("per tuple latency="+elapsedTime*1000.0/round+"ns");		
+		System.out.println("per tuple latency="+elapsedTime*1000.0/round+"us");		
 	}
 
 }

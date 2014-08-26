@@ -6,17 +6,17 @@ import java.util.Map;
 public class InternalState {
 
 	public static class PersonInfo {
-		public PersonInfo(String email, String city, String state,
+		public PersonInfo(String email, String city, String province,
 				String country) {
 			this.email = email;
 			this.city = city;
-			this.state = state;
+			this.province = province;
 			this.country = country;
 		}
 
 		String email;
 		String city;
-		String state;
+		String province;
 		String country;
 	}
 

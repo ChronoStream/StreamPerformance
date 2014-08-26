@@ -86,7 +86,7 @@ public class DatabasePerformance {
 		endTime=System.currentTimeMillis();
 		elapsedMS = endTime - startTime;
 		System.out.println("database insert elapsedTime="+elapsedMS+"ms");
-		System.out.println("per tuple latency="+(elapsedMS*1000.0/round)+"ns");
+		System.out.println("per tuple latency="+(elapsedMS*1000.0/round)+"us");
 	}
 	
 	public static void testBatchInsert(PreparedStatement statement) throws SQLException{
@@ -109,7 +109,7 @@ public class DatabasePerformance {
 		endTime=System.currentTimeMillis();
 		elapsedMS = endTime - startTime;
 		System.out.println("database insert elapsedTime="+elapsedMS+"ms");
-		System.out.println("per tuple latency="+(elapsedMS*1000.0/round)+"ns");
+		System.out.println("per tuple latency="+(elapsedMS*1000.0/round)+"us");
 	}	
 	
 	public static void testDatabaseQuery1(PreparedStatement statement) throws SQLException{		
@@ -161,7 +161,7 @@ public class DatabasePerformance {
 		elapsedMS=endTime-startTime;
 
 		System.out.println("library insert elapsedTime="+elapsedMS+"ms");
-		System.out.println("per tuple latency="+(elapsedMS*1000/round)+"ns");
+		System.out.println("per tuple latency="+(elapsedMS*1000/round)+"us");
 		
 		System.out.println("real memory="+(stringLength+4)*round/1024/1024+"MB");
 		MemoryReport.reportStatus();

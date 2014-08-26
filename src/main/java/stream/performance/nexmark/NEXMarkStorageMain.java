@@ -20,6 +20,9 @@ public class NEXMarkStorageMain {
 	private static PreparedStatement personInsertion = null;
 	private static PreparedStatement auctionInsertion = null;
 	private static PreparedStatement itemInsertion = null;
+	private static PreparedStatement personSelection = null;
+	private static PreparedStatement auctionSelection = null;
+	private static PreparedStatement itemSelection = null;
 
 	public static void prepare() throws Exception {
 		connect = DriverManager.getConnection("jdbc:sqlite::memory:");
@@ -36,6 +39,9 @@ public class NEXMarkStorageMain {
 				.prepareStatement("insert into auctiontable values(?, ?, ?, ?)");
 		itemInsertion = connect
 				.prepareStatement("insert into itemtable values(?, ?)");
+		personSelection = connect.prepareStatement("select * from persontable");
+		auctionSelection = connect.prepareStatement("select * from auctiontable");
+		itemSelection = connect.prepareStatement("select * from itemtable");
 	}
 
 	public static void cleanup() throws Exception {
@@ -87,8 +93,10 @@ public class NEXMarkStorageMain {
 			int numItems = rand.nextInt(3); // should average 1
 			for (int i = 0; i < numItems; ++i) {
 				AuctionTuple auction = generator.generateAuction();
-				auctionInsertion.setString(1, String.valueOf(auction.auction_id));
-				auctionInsertion.setString(2, String.valueOf(auction.seller_id));
+				auctionInsertion.setString(1,
+						String.valueOf(auction.auction_id));
+				auctionInsertion
+						.setString(2, String.valueOf(auction.seller_id));
 				auctionInsertion.setLong(3, auction.begin_time);
 				auctionInsertion.setLong(4, auction.end_time);
 				auctionInsertion.addBatch();
@@ -104,33 +112,31 @@ public class NEXMarkStorageMain {
 			itemInsertion.executeBatch();
 		}
 	}
-	
-	public static void query() throws Exception{
-		Map<String, Integer> avgPrices= new HashMap<String, Integer>();
+
+	public static void query() throws Exception {
+		Map<String, Integer> avgPrices = new HashMap<String, Integer>();
 		statement.executeQuery("select * from table");
 	}
-	
-	public static void main(String[] args) throws Exception{
+
+	public static void main(String[] args) throws Exception {
 		long start_time, end_time, elapsed_time;
 		prepare();
-		//======================================
-		start_time=System.currentTimeMillis();
+		// ======================================
+		start_time = System.currentTimeMillis();
 		populate(200000);
-		end_time=System.currentTimeMillis();
-		elapsed_time=end_time-start_time;
-		System.out.println("populate elapsed time="+elapsed_time+"ms");
+		end_time = System.currentTimeMillis();
+		elapsed_time = end_time - start_time;
+		System.out.println("populate elapsed time=" + elapsed_time + "ms");
 		MemoryReport.reportStatus();
-		//======================================
-		start_time=System.currentTimeMillis();		
+		// ======================================
+		start_time = System.currentTimeMillis();
 		query();
-		end_time=System.currentTimeMillis();
-		elapsed_time=end_time-start_time;
-		System.out.println("query elapsed time="+elapsed_time+"ms");
+		end_time = System.currentTimeMillis();
+		elapsed_time = end_time - start_time;
+		System.out.println("query elapsed time=" + elapsed_time + "ms");
 		MemoryReport.reportStatus();
-		//======================================
+		// ======================================
 		cleanup();
 	}
-		
-
 
 }
