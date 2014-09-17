@@ -5,11 +5,12 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 
-import stream.performance.nexmark.InputTuple.AuctionTuple;
-import stream.performance.nexmark.InputTuple.BidTuple;
-import stream.performance.nexmark.InputTuple.PersonTuple;
 import stream.performance.nexmark.InternalState.AuctionInfo;
 import stream.performance.nexmark.InternalState.PersonInfo;
+import stream.performance.nexmark.common.InputTuple.AuctionTuple;
+import stream.performance.nexmark.common.InputTuple.BidTuple;
+import stream.performance.nexmark.common.InputTuple.PersonTuple;
+import stream.performance.nexmark.common.TupleGenerator;
 import stream.performance.toolkits.MemoryReport;
 
 public class NEXMarkHeapMain {
@@ -18,10 +19,10 @@ public class NEXMarkHeapMain {
 	// record auction information, infrequently updated.
 	private static Map<String, AuctionInfo> auctionMap = new HashMap<String, AuctionInfo>();
 	private static Map<String, LinkedList<Integer>> itemPrices = new HashMap<String, LinkedList<Integer>>();
-
-	public static void populate(int totalCount) {
-		TupleGenerator generator = new TupleGenerator();
-		Random rand = new Random();
+	private static TupleGenerator generator = new TupleGenerator();
+	private static Random rand = new Random();
+	
+	public static void populate() {
 		// populate the stream. generate 50 persons and 50 auctions.
 		for (int i = 0; i < 50; i++) {
 			PersonTuple person = generator.generatePerson();
@@ -36,6 +37,9 @@ public class NEXMarkHeapMain {
 					String.valueOf(auction.seller_id), auction.begin_time,
 					auction.end_time));
 		}
+	}
+	
+	public static void generateStream(int totalCount){
 		for (int count = 0; count < totalCount; ++count) {
 			// now go into a loop generating bids and persons and so on
 			// generating a person approximately 10th time will give is 10
@@ -109,7 +113,8 @@ public class NEXMarkHeapMain {
 		long start_time, end_time, elapsed_time;
 		// ======================================
 		start_time = System.currentTimeMillis();
-		populate(5000);
+		populate();
+		generateStream(5000);
 		end_time = System.currentTimeMillis();
 		elapsed_time = end_time - start_time;
 		System.out.println("populate elapsed time=" + elapsed_time + "ms");

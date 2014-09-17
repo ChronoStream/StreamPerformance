@@ -9,9 +9,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import stream.performance.nexmark.InputTuple.AuctionTuple;
-import stream.performance.nexmark.InputTuple.BidTuple;
-import stream.performance.nexmark.InputTuple.PersonTuple;
+import stream.performance.nexmark.common.InputTuple.AuctionTuple;
+import stream.performance.nexmark.common.InputTuple.BidTuple;
+import stream.performance.nexmark.common.InputTuple.PersonTuple;
+import stream.performance.nexmark.common.TupleGenerator;
 import stream.performance.toolkits.MemoryReport;
 
 public class NEXMarkDatabaseMain {

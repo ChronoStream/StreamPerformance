@@ -1,10 +1,10 @@
-package stream.performance.nexmark;
+package stream.performance.nexmark.common;
 
 import java.util.Random;
 
-import stream.performance.nexmark.InputTuple.AuctionTuple;
-import stream.performance.nexmark.InputTuple.BidTuple;
-import stream.performance.nexmark.InputTuple.PersonTuple;
+import stream.performance.nexmark.common.InputTuple.AuctionTuple;
+import stream.performance.nexmark.common.InputTuple.BidTuple;
+import stream.performance.nexmark.common.InputTuple.PersonTuple;
 import stream.performance.relation.OpenAuctions;
 import stream.performance.relation.PersonGen;
 import stream.performance.relation.Persons;
@@ -22,7 +22,7 @@ public class TupleGenerator {
 	
 	private Random rand = new Random();
 	
-	PersonTuple generatePerson() {
+	public PersonTuple generatePerson() {
 		// schema: person_id, street_name, email, city, state, country
 		cal.incrementTime();
 		p.generateValues(); // person object is reusable now
@@ -36,7 +36,7 @@ public class TupleGenerator {
 		return tuple;
 	}
 
-	AuctionTuple generateAuction() {
+	public AuctionTuple generateAuction() {
 		// schema: auction_id, seller_id, category_id, begin_time, end_time
 		cal.incrementTime();
 		AuctionTuple tuple=new AuctionTuple();
@@ -48,7 +48,7 @@ public class TupleGenerator {
 		return tuple;
 	}
 
-	BidTuple generateBid() {
+	public BidTuple generateBid() {
 		// schema: auction_id, date_time, person_id, price
 		cal.incrementTime();
 		BidTuple tuple=new BidTuple();
