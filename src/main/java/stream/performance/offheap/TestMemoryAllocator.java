@@ -21,7 +21,7 @@ public class TestMemoryAllocator {
     public static void main(String... args) {
 
         if (args == null || args.length == 0) {
-            args = new String[]{Allocator.Type.OFFHEAP.name(), "5000000"};
+            args = new String[]{Allocator.Type.HEAP.name(), "5000000"};
         }
 
         final int nElements = Integer.valueOf(args[1]);
@@ -58,7 +58,7 @@ public class TestMemoryAllocator {
 
                 long rreadStart = System.nanoTime();
                 int rresRead = randomRead(t, nElements, idx);
-                long rtotalRead = System.nanoTime() - readStart;
+                long rtotalRead = System.nanoTime() - rreadStart;
 
                 double writeMs = totalWrite / 1000000d;
                 double readMs = totalRead / 1000000d;

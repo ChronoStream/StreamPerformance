@@ -1,4 +1,5 @@
 package stream.performance.offheap;
+
 /*
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,35 +15,30 @@ package stream.performance.offheap;
  * limitations under the License.
  */
 
-
 public final class HeapAllocatedObject implements ObjectType {
 
-        private final HeapValue[] values;
+	private final HeapValue[] values;
 	private HeapValue cur = null;
 
-
-	public HeapAllocatedObject(int element)
-	{
+	public HeapAllocatedObject(int element) {
 		values = new HeapValue[element];
-		for(int x=0; x < element; x++)
-		{
+		for (int x = 0; x < element; x++) {
 			values[x] = new HeapValue();
 		}
 	}
-	
-	
+
 	public void setInt(int value) {
 		cur.id = value;
 	}
 
 	public void setLong(long value) {
 		cur.longValue = value;
-		
+
 	}
 
 	public void setByte(byte value) {
 		cur.type = value;
-		
+
 	}
 
 	public int getInt() {
@@ -56,16 +52,15 @@ public final class HeapAllocatedObject implements ObjectType {
 	public byte getByte() {
 		return cur.type;
 	}
-	
-	public static final class HeapValue
-	{
-		public int  id;
+
+	public static final class HeapValue {
+		public int id;
 		public long longValue;
 		public byte type;
 	}
 
 	public void navigate(int index) {
-	    cur = values[index];
+		cur = values[index];
 	}
 
 }
