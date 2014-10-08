@@ -9,8 +9,6 @@
 //import java.util.Map;
 //import java.util.Random;
 //
-//import stream.performance.mytest.mymap.Mymap;
-//
 //public class TestSerialize {
 //
 //	static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
