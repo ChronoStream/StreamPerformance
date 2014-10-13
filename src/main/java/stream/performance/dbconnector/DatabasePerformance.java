@@ -29,6 +29,7 @@ public class DatabasePerformance {
 		String password = "";
 		connect = DriverManager.getConnection(url, user, password);
 		statement = connect.createStatement();
+		statement.setFetchDirection(100000);
 		statement.executeUpdate("drop table mykeyvalue");
 		statement.executeUpdate("create table mykeyvalue(mykey varchar("+String.valueOf(stringLength)+"), myvalue int) engine=memory");
 		//******************************
@@ -179,10 +180,10 @@ public class DatabasePerformance {
 	}
 	
 	public static void main(String[] args) throws Exception{
-		System.out.println("==========library======");
-		testLib();
-		System.out.println("==========database========");
-		testDB();
+//		System.out.println("==========library======");
+//		testLib();
+//		System.out.println("==========database========");
+//		testDB();
 		System.out.println("==========sqlite=========");
 		testSqlite();
 	}
